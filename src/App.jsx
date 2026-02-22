@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import SubscriptionItem from './components/SubscriptionItem'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 function App() {
   const [subscriptions, setSubscriptions] = useState([])
   const [name, setName] = useState('')
@@ -12,7 +14,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
-    fetch('http://localhost:3000/subscriptions')
+    fetch(`${API_URL}/subscriptions`)
       .then(response => response.json())
       .then(data => setSubscriptions(data))
       .catch(error => console.error("Erro ao buscar dados:", error))
@@ -32,7 +34,7 @@ function App() {
     const subscriptionData = { name, price, payment_date: parseInt(paymentDate, 10), active: isActive }
 
     if (editingId) {
-      fetch(`http://localhost:3000/subscriptions/${editingId}`, {
+      fetch(`${API_URL}/subscriptions/${editingId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ subscription: subscriptionData })
@@ -45,7 +47,7 @@ function App() {
         limparFormulario()
       })
     } else {
-      fetch('http://localhost:3000/subscriptions', {
+      fetch(`${API_URL}/subscriptions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ subscription: subscriptionData })
@@ -63,7 +65,7 @@ function App() {
   const handleToggleActive = (sub) => {
     const statusInvertido = !(sub.active !== false)
     
-    fetch(`http://localhost:3000/subscriptions/${sub.id}`, {
+    fetch(`${API_URL}/subscriptions/${sub.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ subscription: { active: statusInvertido } })
@@ -85,7 +87,7 @@ function App() {
 
   const handleDelete = (id) => {
     if (!window.confirm("Tem certeza que deseja apagar?")) return;
-    fetch(`http://localhost:3000/subscriptions/${id}`, { method: 'DELETE' })
+    fetch(`${API_URL}/subscriptions/${id}`, { method: 'DELETE' })
     .then(response => {
       if (response.ok) {
         setSubscriptions(subscriptions.filter(sub => sub.id !== id));
